@@ -1,0 +1,458 @@
+1.*Write a query which will display the customer id, account type they hold, their account number and bank name.
+
+SELECT
+  AC.CUSTOMER_ID,
+  AC.ACCOUNT_TYPE,
+  AC.ACCOUNT_NO,
+  B.BANK_NAME
+FROM ACCOUNT_INFO AC,
+     BANK_INFO B
+WHERE B.IFSC_CODE = AC.IFSC_CODE;
+
+
+
+
+2.*Write a query which will display the customer id, account type and the account number of HDFC customers who registered after 12-JAN-2012 and before 04-APR-2012.
+
+SELECT
+  CUSTOMER_ID,
+  ACCOUNT_TYPE,
+  ACCOUNT_NO
+FROM ACCOUNT_INFO
+WHERE IFSC_CODE IN (SELECT
+  IFSC_CODE
+FROM BANK_INFO
+WHERE BANK_NAME = 'HDFC')
+AND REGISTRATION_DATE BETWEEN '2012-01-12' AND '2012-04-04'
+
+
+
+
+3.*Write a query which will display the customer id, customer name, account no, account type and bank name where the customers hold the account.
+
+SELECT
+  C.CUSTOMER_ID,
+  C.CUSTOMER_NAME,
+  AC.ACCOUNT_NO,
+  AC.ACCOUNT_TYPE,
+  B.BANK_NAME
+FROM CUSTOMER_PERSONAL_INFO C,
+     BANK_INFO B,
+     ACCOUNT_INFO AC
+WHERE C.CUSTOMER_ID = AC.CUSTOMER_ID
+AND B.IFSC_CODE = AC.IFSC_CODE
+
+
+
+4.*Write a query which will display the customer id, customer name, gender, marital status along with the unique reference string and
+ sort the records based on customer id in descending order. <br/>
+<br/><b>Hint:  </b>Generate unique reference string as mentioned below
+:
+<br/> CustomerName_Gender_MaritalStatus
+<br/><b> Example, </b>
+<br/> C-005           KUMAR              M                 SINGLE            KUMAR_M_SINGLE
+<BR/> 
+Use ""UNIQUE_REF_STRING"" as alias name for displaying the unique reference string."
+
+select 
+customer_id,
+ customer_name,
+ gender, 
+marital_status, 
+customer_name || '_' || gender || '_' || marital_status UNIQUE_REF_STRING
+from customer_personal_info
+order by customer_id desc;
+
+5.*Write a query which will display the account number, customer id, registration date, initial deposit amount of the customer
+ whose initial deposit amount is within the range of Rs.15000 to Rs.25000.
+
+SELECT
+  ACCOUNT_NO, 
+  CUSTOMER_ID,
+  REGISTRATION_DATE,
+  INITIAL_DEPOSIT
+  FROM
+     ACCOUNT_INFO
+WHERE INITIAL_DEPOSIT BETWEEN 15000 AND 25000
+
+6.*Write a query which will display customer id, customer name, date of birth, guardian name of the customers whose name starts with 'J'.
+
+SELECT
+  C.CUSTOMER_ID,
+  C.CUSTOMER_NAME,
+  C.DATE_OF_BIRTH,
+  C.GUARDIAN_NAME
+FROM CUSTOMER_PERSONAL_INFO C
+WHERE C.CUSTOMER_NAME LIKE 'J%'
+
+7.*Write a query which will display customer id, account number and passcode. 
+<br/>
+Hint:  To generate passcode, join the last three digits of customer id and last four digit of account number.
+ 
+<br/>Example
+<br/>C-001                   1234567898765432                0015432
+<br/>Use ""PASSCODE"" as alias name for displaying the passcode."
+
+SELECT ACCOUNT_NO, CUSTOMER_ID, SUBSTR(CUSTOMER_ID, -3 ,3) || SUBSTR(account_no, -4, 4) PASSCODE FROM ACCOUNT_INFO
+
+8.*Write a query which will display the customer id, customer name, date of birth, Marital Status, Gender, Guardian name, 
+contact no and email id of the customers whose gender is male 'M' and marital status is MARRIED.
+
+SELECT
+  CUSTOMER_ID,
+  CUSTOMER_NAME,
+  DATE_OF_BIRTH,
+  GUARDIAN_NAME,
+  MARITAL_STATUS,
+  GENDER,
+  GUARDIAN_NAME,
+  CONTACT_NO,
+  MAIL_ID
+FROM CUSTOMER_PERSONAL_INFO
+WHERE GENDER = 'M' AND MARITAL_STATUS = 'MARRIED'
+
+9.*Write a query which will display the customer id, customer name, guardian name, reference account holders name of the customers 
+who are referenced / referred by their 'FRIEND'.
+
+SELECT
+  c.customer_id,
+  c.customer_name,
+  c.guardian_name,
+  r.reference_acc_name
+FROM customer_personal_info c,
+     customer_reference_info r
+WHERE c.customer_id = r.customer_id
+AND LOWER(r.relation) = 'friend'
+
+
+10.*Write a query to display the customer id, account number and interest amount in the below format with INTEREST_AMT as alias name
+ Sort the result based on the INTEREST_AMT in ascending order.  <BR/>Example: 
+$5<BR/>Hint: Need to prefix $ to interest amount and round the result without decimals.
+
+select
+customer_id,
+account_no, '$' || round(interest) as interest_amt
+from account_info 
+order by interest_amt 
+
+
+
+
+11.*Write a query which will display the customer id, customer name, account no, account type, activation date,
+ bank name whose account will be activated on '10-APR-2012'
+
+SELECT
+  ac.customer_id,
+  c.customer_name,
+  ac.account_no,
+  ac.account_type,
+  ac.activation_date,
+  b.bank_name
+FROM account_info ac,
+     customer_personal_info c,
+     bank_info b
+WHERE ac.ifsc_code = b.ifsc_code
+AND ac.customer_id = c.customer_id
+AND ac.activation_date = '2012-04-10'
+
+
+
+
+
+12.*Write a query which will display account number, customer id, customer name, bank name, branch name, ifsc code
+, citizenship, interest and initial deposit amount of all the customers.
+
+SELECT
+  ac.account_no,
+  ac.customer_id,
+  c.customer_name,
+  b.bank_name,
+  b.ifsc_code,
+  c.citizenship,
+  ac.interest,
+  ac.initial_deposit
+FROM account_info ac,
+     customer_personal_info c,
+     bank_info b
+WHERE ac.ifsc_code = b.ifsc_code
+AND ac.customer_id = c.customer_id
+
+13.*Write a query which will display customer id, customer name, date of birth, guardian name, contact number,
+ mail id and reference account holder's name of the customers who has submitted the passport as an identification document.
+SELECT
+  ac.customer_id,
+  c.customer_name,
+  ac.account_no,
+  c.date_of_birth,
+  c.guardian_name,
+  c.contact_no,
+  c.mail_id
+FROM account_info ac,
+     customer_personal_info c,
+     CUSTOMER_REFERENCE_INFO r
+WHERE c.customer_id = ac.customer_id
+AND ac.customer_id = c.customer_id
+AND r.customer_id = c.customer_id
+
+14.*Write a query to display the customer id, customer name, account number, account type, initial deposit, 
+interest who have deposited maximum amount in the bank.
+
+SELECT
+  ac.customer_id,
+  c.customer_name,
+  ac.account_no,
+  ac.account_type,
+  ac.interest,
+  b.bank_name,
+  ac.initial_deposit
+FROM account_info ac,
+     customer_personal_info c,
+     bank_info b
+WHERE ac.ifsc_code = b.ifsc_code
+AND ac.customer_id = c.customer_id
+ORDER BY initial_deposit DESC
+
+
+
+15.*Write a query to display the customer id, customer name, account number, account type, interest, bank name 
+and initial deposit amount of the customers who are getting maximum interest rate.
+
+SELECT
+  ac.customer_id,
+  c.customer_name,
+  ac.account_no,
+  ac.account_type,
+  ac.interest,
+  b.bank_name,
+  ac.initial_deposit
+FROM account_info ac,
+     customer_personal_info c,
+     bank_info b
+WHERE ac.ifsc_code = b.ifsc_code
+AND ac.customer_id = c.customer_id
+ORDER BY interest DESC
+
+
+
+16.Write a query to display the customer id, customer name, account no, bank name, contact no 
+and mail id of the customers who are from BANGALORE.
+
+SELECT
+  ac.customer_id,
+  c.customer_name,
+  ac.account_no,
+  b.bank_name,
+  c.contact_no,
+  c.mail_id
+FROM account_info ac,
+     customer_personal_info c,
+     bank_info b
+WHERE ac.ifsc_code = b.ifsc_code
+AND ac.customer_id = c.customer_id
+AND instr(LOWER(address), 'bangalore') <> 0
+
+17.Write a query which will display customer id, bank name, branch name, ifsc code, registration date, 
+activation date of the customers whose activation date is in the month of march (March 1'st to March 31'st).
+
+SELECT
+  ac.customer_id,
+  b.bank_name,
+  b.branch_name,
+  b.ifsc_code,
+  ac.registration_date
+FROM account_info ac,
+     customer_personal_info c,
+     bank_info b
+WHERE ac.ifsc_code = b.ifsc_code
+AND ac.customer_id = c.customer_id
+AND to_char(activation_date, 'mm') = '03';
+
+
+
+18.Write a query which will calculate the interest amount and display it along with customer id, customer name, 
+account number, account type, interest, and initial deposit amount.<BR>Hint :Formula for interest amount, 
+calculate: ((interest/100) * initial deposit amt) with column name 'interest_amt' (alias)
+
+SELECT
+  ac.customer_id,
+  c.customer_name,
+  ac.account_no,
+  ac.account_type,
+  ac.interest,
+  ac.initial_deposit,
+  ((ac.interest / 100) * initial_deposit) AS interest_amt
+FROM account_info ac,
+     customer_personal_info c,
+     bank_info b
+WHERE ac.ifsc_code = b.ifsc_code
+AND ac.customer_id = c.customer_id
+
+
+
+
+19.Write a query to display the customer id, customer name, date of birth, guardian name, contact number, 
+mail id, reference name who has been referenced by 'RAGHUL'.
+
+SELECT
+  C.CUSTOMER_ID,
+  C.CUSTOMER_NAME,
+  C.DATE_OF_BIRTH,
+  C.GUARDIAN_NAME,
+  C.CONTACT_NO,
+  C.MAIL_ID,
+  R.REFERENCE_ACC_NAME
+FROM CUSTOMER_PERSONAL_INFO C, CUSTOMER_REFERENCE_INFO R
+WHERE R.CUSTOMER_ID = C.CUSTOMER_ID AND R.REFERENCE_ACC_NAME = 'RAGHUL'
+
+
+
+
+20."Write a query which will display the customer id, customer name and contact number with ISD code of 
+all customers in below mentioned format.  Sort the result based on the customer id in descending order. 
+<BR>Format for contact number is :  
+<br/> ""+91-3digits-3digits-4digits""
+<br/> Example: +91-924-234-2312
+<br/> Use ""CONTACT_ISD"" as alias name."
+select customer_id, customer_name, date_of_birth, contact_no, '+91-' || substr(contact_no, 1, 3) || '-' || substr(contact_no, 4, 3) || '-' || substr(contact_no, 7) as CONTACT_ISD from customer_personal_info order by customer_id
+
+
+
+
+
+21.Write a query which will display account number, account type, customer id, customer name, date of birth, guardian name, 
+contact no, mail id , gender, reference account hlders name, reference account holders account number, registration date, 
+activation date, number of days between the registration date and activation date with alias name "NoofdaysforActivation", 
+bank name, branch name and initial deposit for all the customers.
+
+SELECT
+  ac.account_no,
+  ac.account_type,
+  ac.customer_id,
+  c.customer_name,
+  c.date_of_birth,
+  c.guardian_name,
+  c.contact_no,
+  c.mail_id,
+  c.gender,
+  r.reference_acc_no,
+  ac.registration_date,
+  ac.activation_date,
+  (ac.activation_date - ac.registration_date) NoofdaysforActivation
+FROM account_info ac,
+     customer_personal_info c,
+     CUSTOMER_REFERENCE_INFO r
+WHERE ac.customer_id = c.customer_id
+AND r.customer_id = c.customer_id
+
+
+
+
+22."Write a query which will display customer id, customer name,  guardian name, identification doc type,
+ reference account holders name, account type, ifsc code, bank name and current balance for the customers 
+who has only the savings account. 
+<br/>Hint:  Formula for calculating current balance is add the intital deposit amount and interest
+ and display without any decimals. Use ""CURRENT_BALANCE"" as alias name."
+
+SELECT
+  c.customer_id,
+  c.customer_name,
+  c.guardian_name,
+  c.identification_doc_type,
+  r.reference_acc_name,
+  r.reference_acc_no,
+  ac.account_type,
+  ac.ifsc_code,
+  b.bank_name,
+  c.date_of_birth,
+  r.reference_acc_name,
+  (ac.initial_deposit + ac.initial_deposit * (ac.interest / 100)) current_balance
+FROM account_info ac,
+     customer_personal_info c,
+     CUSTOMER_REFERENCE_INFO r,
+     bank_info b
+WHERE ac.customer_id = c.customer_id
+AND r.customer_id = ac.customer_id
+AND b.ifsc_code = ac.ifsc_code
+
+
+
+
+
+
+23."Write a query which will display the customer id, customer name, account number, account type, interest, initial deposit;
+ <br/>check the initial deposit,<br/> if initial deposit is 20000 then display ""high"",<br/> if initial deposit is 16000 display 'moderate'
+,<br/> if initial deposit is 10000 display 'average', <br/>if initial deposit is 5000 display 'low', <br/>if initial deposit is 0 display
+ 'very low' otherwise display 'invalid' and sort by interest in descending order.<br/>
+Hint: Name the column as ""Deposit_Status"" (alias). 
+<br/>Strictly follow the lower case for strings in this query."
+
+SELECT C.CUSTOMER_ID,
+C.CUSTOMER_NAME,
+AC.ACCOUNT_NO,
+AC.ACCOUNT_TYPE,
+AC.INTEREST,
+AC.INITIAL_DEPOSIT,
+CASE AC.INITIAL_DEPOSIT
+WHEN 20000 THEN 'HIGH'
+WHEN 16000 THEN 'MODERATE'
+WHEN 10000 THEN 'AVERAGE'
+WHEN 5000 THEN 'LOW'
+WHEN 0 THEN 'VERY LOW'
+END DEPOSIT_STATUS
+FROM ACCOUNT_INFO AC,
+CUSTOMER_PERSONAL_INFO C
+WHERE AC.CUSTOMER_ID = C.CUSTOMER_ID;
+
+
+
+24."Write a query which will display customer id, customer name,  account number, account type, bank name, ifsc code, initial deposit amount
+ and new interest amount for the customers whose name starts with ""J"". 
+<br/> Hint:  Formula for calculating ""new interest amount"" is 
+if customers account type is savings then add 10 % on current interest amount to interest amount else display the current interest amount.
+ Round the new interest amount to 2 decimals.<br/> Use ""NEW_INTEREST"" as alias name for displaying the new interest amount.
+
+<br/>Example, Assume Jack has savings account and his current interest amount is 10.00, then the new interest amount is 11.00 i.e (10 + (10 * 10/100)). 
+"
+
+SELECT
+  C.CUSTOMER_ID,
+  C.CUSTOMER_NAME,
+  AC.ACCOUNT_NO,
+  AC.ACCOUNT_TYPE,
+  B.BANK_NAME,
+  B.IFSC_CODE,
+  AC.INITIAL_DEPOSIT,
+  CASE AC.ACCOUNT_TYPE
+  WHEN 'SAVINGS' THEN AC.INTEREST + (AC.INTEREST * 10/100)
+  ELSE AC.INTEREST
+  END AS NEW_INTEREST
+FROM BANK_INFO B,
+     CUSTOMER_PERSONAL_INFO C,
+     ACCOUNT_INFO AC
+WHERE C.CUSTOMER_ID = AC.CUSTOMER_ID
+AND AC.IFSC_CODE = B.IFSC_CODE
+
+
+
+25.Write query to display the customer id, customer name, account no, initial deposit, tax percentage as calculated below.
+<BR>Hint: <BR>If initial deposit = 0 then tax is '0%'<BR>If initial deposit &lt;= 10000 then tax is '3%' 
+<BR>If initial deposit &gt; 10000 and initial deposit &lt; 20000 then tax is '5%' <BR>If initial deposit &gt;= 20000 and
+ initial deposit&lt;=30000 then tax is '7%' <BR>If initial deposit &gt; 30000 then tax is '10%' <BR>Use the alias name 'taxPercentage'
+
+SELECT
+  C.CUSTOMER_ID,
+  C.CUSTOMER_NAME,
+  AC.ACCOUNT_NO,
+  AC.ACCOUNT_TYPE,
+  AC.INITIAL_DEPOSIT,
+  CASE 
+  WHEN AC.INITIAL_DEPOSIT >= 30000 THEN '7%'
+  WHEN AC.INITIAL_DEPOSIT >= 20000 THEN '5%'
+  WHEN AC.INITIAL_DEPOSIT >= 10000 THEN '3%'
+  WHEN AC.INITIAL_DEPOSIT >= 0 THEN '0%'
+  END AS taxPercentage
+FROM BANK_INFO B,
+     CUSTOMER_PERSONAL_INFO C,
+     ACCOUNT_INFO AC
+WHERE C.CUSTOMER_ID = AC.CUSTOMER_ID
+AND AC.IFSC_CODE = B.IFSC_CODE
